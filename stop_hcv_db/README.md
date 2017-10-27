@@ -1,4 +1,4 @@
-STOP-HCV Clinical Database Application Containers
+STOP-HCV Clinical Database Application Container
 ==========
 
 This repository contains docker and installation files in order to set up the LabKey database components required to provide a LabKey Server installation  [LabKey Server](https://www.labkey.org/) in [Docker](https://www.docker.com).
