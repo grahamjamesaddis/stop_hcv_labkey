@@ -1,0 +1,66 @@
+FROM tomcat:8.5.23
+LABEL maintainer="Graham.Addis@ndm.ox.ac.uk"
+# credit to bconn@labkey.com for portions of the setup,
+# See https://github.com/LabKey/samples
+
+# The defaults are set so you can get an insecure system up and running
+# Make sure you override these at build time.
+ARG LKDB_USER=postgres
+ARG LKDB_PASSWORD=passwordForLabkeyUserDb
+ARG SHCVDB_USER=postgres
+ARG SHCVDB_PASSWORD=passwordForStopHcvDb
+ARG LABKEY_ENCRYPTION_KEY=encryptionKeyForLabKey32AsciiCh
+
+ENV LABKEY_VERSION=17.2 \
+    LABKEY_DIST=17.2-52553-community \
+    LKDB_USER=$LKDB_USER \
+    LKDB_PASSWORD=$LKDB_PASSWORD \
+    LKDB_HOST=lkey_userdb \
+    SHCVDB_USER=$SHCVDB_USER \
+    SHCVDB_PASSWORD=$SHCVDB_PASSWORD \
+    SHCVDB_HOST=stop_hcv_db \
+    LABKEY_ENCRYPTION_KEY=$LABKEY_ENCRYPTION_KEY \
+    CATALINA_BASE=/usr/local/tomcat \
+    CATALINA_HOME=/usr/local/tomcat
+
+RUN useradd -m -u 3000 tomcat
+
+#
+# Install the LabKey Server and Configure
+#
+
+RUN mkdir -p /labkey/src && \
+    mkdir -p /labkey/labkey
+
+RUN cd /labkey/src && wget --no-verbose http://labkey.s3.amazonaws.com/downloads/general/r/$LABKEY_VERSION/Labkey$LABKEY_DIST-bin.tar.gz
+
+# If you want to download a LabKey distribution by hand, put it in the
+# labkey_core directory and use a command something like one of these.
+# Don't forget to comment out the 'wget' above.
+# COPY Labkey$LABKEY_DIST-bin.tar.gz /labkey/src/Labkey$LABKEY_DIST-bin.tar.gz
+# COPY Labkey17.2-52553-community-bin.tar.gz /labkey/src/Labkey17.2-52553-community-bin.tar.gz
+
+RUN cd /labkey/src && \
+    tar xzf /labkey/src/Labkey$LABKEY_DIST-bin.tar.gz && \
+    cp -R Labkey$LABKEY_DIST-bin/modules /labkey/labkey && \
+    cp -R Labkey$LABKEY_DIST-bin/labkeywebapp /labkey/labkey && \
+    cp -R Labkey$LABKEY_DIST-bin/pipeline-lib /labkey/labkey && \
+    cp -f Labkey$LABKEY_DIST-bin/tomcat-lib/*.jar $CATALINA_BASE/lib/ && \
+    mkdir /labkey/labkey/files && \
+    chown -R tomcat.tomcat /labkey/labkey && \
+    rm -rf Labkey$LABKEY_DIST-bin && \
+    rm Labkey$LABKEY_DIST-bin.tar.gz
+
+
+COPY labkey/labkey.xml_src ${CATALINA_HOME}/conf/Catalina/localhost/labkey.xml_src
+
+RUN cd ${CATALINA_HOME}/conf/Catalina/localhost && \
+    sed \
+    -e "s/@@jdbcUser@@/$LKDB_USER/" \
+    -e "s/@@jdbcPassword@@/$LKDB_PASSWORD/" \
+    -e "s/@@jdbcHost@@/$LKDB_HOST/" \
+    -e "s/@@shcvUser@@/$SHCVDB_USER/" \
+    -e "s/@@shcvPassword@@/$SHCVDB_PASSWORD/" \
+    -e "s/@@shcvHost@@/$SHCVDB_HOST/" \
+    -e "s/@@masterEncryptionKey@@/$LABKEY_ENCRYPTION_KEY/" \
+    labkey.xml_src > ROOT.xml

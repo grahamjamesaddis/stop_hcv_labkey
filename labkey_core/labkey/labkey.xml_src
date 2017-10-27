@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context docBase="/labkey/labkey/labkeywebapp" reloadable="true" crossContext="true">
+
+    <Resource name="jdbc/labkeyDataSource" auth="Container"
+        type="javax.sql.DataSource"
+        username="@@jdbcUser@@"
+        password="@@jdbcPassword@@"
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://@@jdbcHost@@/labkey"
+        maxTotal="20"
+        maxIdle="10"
+        accessToUnderlyingConnectionAllowed="true"
+        validationQuery="SELECT 1"
+        />
+
+    <Resource name="jdbc/stopHcvDataSource" auth="Container"
+        type="javax.sql.DataSource"
+        username="@@shcvUser@@"
+        password="@@shcvPassword@@"
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://@@shcvHost@@/stop_hcv"
+        maxTotal="20"
+        maxIdle="10"
+        accessToUnderlyingConnectionAllowed="true"
+        validationQuery="SELECT 1"
+        />
+
+    <Resource name="mail/Session" auth="Container"
+        type="javax.mail.Session"
+        mail.smtp.host="@@smtpHost@@"
+        mail.smtp.user="@@smtpUser@@"
+        mail.smtp.port="@@smtpPort@@"/>
+
+    <Resources cachingAllowed="true" cacheMaxSize="20000" />
+
+    <Loader loaderClass="org.labkey.bootstrap.LabKeyBootstrapClassLoader" />
+
+    <!-- Encryption key for encrypted property store -->
+    <Parameter name="MasterEncryptionKey" value="@@masterEncryptionKey@@" />
+
+    <!-- mzML support via JNI -->
+    <!--
+	<Parameter name="org.labkey.api.ms2.mzmlLibrary" value="pwiz_swigbindings"></Parameter>
+	 -->
+
+    <!-- Track installations from Windows Installer -->
+    <!--@@installer@@ <Parameter name="org.labkey.api.util.mothershipreport.usedInstaller" value="true"/> @@installer@@-->
+
+    <!-- Pipeline configuration -->
+    <!--@@pipeline@@    <Parameter name="org.labkey.api.pipeline.config" value="@@pipelineConfigPath@@"/> @@pipeline@@-->
+
+    <!--        brokerURL="tcp://localhost:61616" userName="username" password="password" -->
+    <!--@@jmsConfig@@ <Resource name="jms/ConnectionFactory" auth="Container"
+        type="org.apache.activemq.ActiveMQConnectionFactory"
+        factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+        description="JMS Connection Factory"
+        brokerURL="vm://localhost?broker.persistent=false&amp;broker.useJmx=false"
+        brokerName="LocalActiveMQBroker"/> @@jmsConfig@@-->
+</Context>
