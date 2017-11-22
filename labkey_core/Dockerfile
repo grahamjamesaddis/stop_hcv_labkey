@@ -11,8 +11,9 @@ ARG SHCVDB_USER=postgres
 ARG SHCVDB_PASSWORD=passwordForStopHcvDb
 ARG LABKEY_ENCRYPTION_KEY=encryptionKeyForLabKey32AsciiCh
 
-ENV LABKEY_VERSION=17.2 \
-    LABKEY_DIST=17.2-52553-community \
+ENV LABKEY_PREFIX=LabKey \
+    LABKEY_VERSION=17.3 \
+    LABKEY_DIST=17.3-55100.13-community \
     LKDB_USER=$LKDB_USER \
     LKDB_PASSWORD=$LKDB_PASSWORD \
     LKDB_HOST=lkey_userdb \
@@ -32,24 +33,25 @@ RUN useradd -m -u 3000 tomcat
 RUN mkdir -p /labkey/src && \
     mkdir -p /labkey/labkey
 
-RUN cd /labkey/src && wget --no-verbose http://labkey.s3.amazonaws.com/downloads/general/r/$LABKEY_VERSION/Labkey$LABKEY_DIST-bin.tar.gz
+RUN cd /labkey/src && wget --no-verbose http://labkey.s3.amazonaws.com/downloads/general/r/$LABKEY_VERSION/$LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz
 
 # If you want to download a LabKey distribution by hand, put it in the
 # labkey_core directory and use a command something like one of these.
 # Don't forget to comment out the 'wget' above.
-# COPY Labkey$LABKEY_DIST-bin.tar.gz /labkey/src/Labkey$LABKEY_DIST-bin.tar.gz
+# COPY $LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz /labkey/src/$LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz
 # COPY Labkey17.2-52553-community-bin.tar.gz /labkey/src/Labkey17.2-52553-community-bin.tar.gz
+# COPY LabKey17.3-55100.13-community-bin.tar.gz /labkey/src/LabKey17.3-55100.13-community-bin.tar.gz
 
 RUN cd /labkey/src && \
-    tar xzf /labkey/src/Labkey$LABKEY_DIST-bin.tar.gz && \
-    cp -R Labkey$LABKEY_DIST-bin/modules /labkey/labkey && \
-    cp -R Labkey$LABKEY_DIST-bin/labkeywebapp /labkey/labkey && \
-    cp -R Labkey$LABKEY_DIST-bin/pipeline-lib /labkey/labkey && \
-    cp -f Labkey$LABKEY_DIST-bin/tomcat-lib/*.jar $CATALINA_BASE/lib/ && \
+    tar xzf /labkey/src/$LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz && \
+    cp -R $LABKEY_PREFIX$LABKEY_DIST-bin/modules /labkey/labkey && \
+    cp -R $LABKEY_PREFIX$LABKEY_DIST-bin/labkeywebapp /labkey/labkey && \
+    cp -R $LABKEY_PREFIX$LABKEY_DIST-bin/pipeline-lib /labkey/labkey && \
+    cp -f $LABKEY_PREFIX$LABKEY_DIST-bin/tomcat-lib/*.jar $CATALINA_BASE/lib/ && \
     mkdir /labkey/labkey/files && \
     chown -R tomcat.tomcat /labkey/labkey && \
-    rm -rf Labkey$LABKEY_DIST-bin && \
-    rm Labkey$LABKEY_DIST-bin.tar.gz
+    rm -rf $LABKEY_PREFIX$LABKEY_DIST-bin && \
+    rm $LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz
 
 
 COPY labkey/labkey.xml_src ${CATALINA_HOME}/conf/Catalina/localhost/labkey.xml_src
