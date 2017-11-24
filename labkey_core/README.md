@@ -41,6 +41,10 @@ The username and password configured for the lkey_userdb must correspond for the
 |lkey_userdb username|lkey_userdb|lkey_userdb/Dockerfile|POSTGRES_USER    |'postgres'               |
 |lkey_userdb password|lkey_userdb|lkey_userdb/Dockerfile|POSTGRES_PASSWORD|'passwordForLabkeyUserDb'|
 -----------------------------------------------------------------------------------------------------
+|labkey_smtp host    |labkey_core|labkey_core/Dockerfile|LABKEY_SMTP_HOST |'labkey_smtp'.           |
+|labkey_smtp port    |labkey_core|labkey_core/Dockerfile|LABKEY_SMTP_PORT |'25'                     |
+|labkey_smtp username|labkey_core|labkey_core/Dockerfile|LABKEY_SMTP_USER |'labkey@labkey_core'.    |
+-----------------------------------------------------------------------------------------------------
 ```
 
 The default master encryption key for LabKey is set to 'encryptionKeyForLabKey32AsciiCh' and is defined as LABKEY_ENCRYPTION_KEY in the labkey_core Dockerfile.
@@ -54,6 +58,9 @@ docker run -d --network labkey_net \
             -e SHCVDB_USER=newUsernameForStopHcvDb \
             -e LKDB_PASSWORD=newPasswordForLabKeyDb \
             -e LKDB_USER=newUsernameForLabKeyDb \
+            -e LABKEY_SMTP_HOST=smtp.mydomain.com \
+            -e LABKEY_SMTP_PORT=1025 \
+            -e LABKEY_SMTP_USER=randomuser@smtp.mydomain.com \
             -e LABKEY_ENCRYPTION_KEY=chooseRandom32AsciiOr64HexPWord \
             labkey_core
 ```
