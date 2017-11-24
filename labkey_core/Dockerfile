@@ -10,6 +10,9 @@ ARG LKDB_PASSWORD=passwordForLabkeyUserDb
 ARG SHCVDB_USER=postgres
 ARG SHCVDB_PASSWORD=passwordForStopHcvDb
 ARG LABKEY_ENCRYPTION_KEY=encryptionKeyForLabKey32AsciiCh
+ARG LABKEY_SMTP_HOST=labkey_smtp
+ARG LABKEY_SMTP_PORT=25
+ARG LABKEY_SMTP_USER=labkey@labkey_core
 
 ENV LABKEY_PREFIX=LabKey \
     LABKEY_VERSION=17.3 \
@@ -20,6 +23,9 @@ ENV LABKEY_PREFIX=LabKey \
     SHCVDB_USER=$SHCVDB_USER \
     SHCVDB_PASSWORD=$SHCVDB_PASSWORD \
     SHCVDB_HOST=stop_hcv_db \
+    LABKEY_SMTP_HOST=$LABKEY_SMTP_HOST \
+    LABKEY_SMTP_PORT=$LABKEY_SMTP_PORT \
+    LABKEY_SMTP_USER=$LABKEY_SMTP_USER \
     LABKEY_ENCRYPTION_KEY=$LABKEY_ENCRYPTION_KEY \
     CATALINA_BASE=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat
@@ -27,10 +33,18 @@ ENV LABKEY_PREFIX=LabKey \
 RUN useradd -m -u 3000 tomcat
 
 #
+# Install extra development tools
+#
+
+RUN apt-get update && \
+    apt-get -y -q install telnet
+
+#
 # Install the LabKey Server and Configure
 #
 
-RUN mkdir -p /labkey/src && \
+RUN mkdir -p /labkey/bin && \
+    mkdir -p /labkey/src && \
     mkdir -p /labkey/labkey
 
 RUN cd /labkey/src && wget --no-verbose http://labkey.s3.amazonaws.com/downloads/general/r/$LABKEY_VERSION/$LABKEY_PREFIX$LABKEY_DIST-bin.tar.gz
@@ -55,14 +69,10 @@ RUN cd /labkey/src && \
 
 
 COPY labkey/labkey.xml_src ${CATALINA_HOME}/conf/Catalina/localhost/labkey.xml_src
+COPY labkey/configure_labkey_xml.sh /labkey/bin
 
-RUN cd ${CATALINA_HOME}/conf/Catalina/localhost && \
-    sed \
-    -e "s/@@jdbcUser@@/$LKDB_USER/" \
-    -e "s/@@jdbcPassword@@/$LKDB_PASSWORD/" \
-    -e "s/@@jdbcHost@@/$LKDB_HOST/" \
-    -e "s/@@shcvUser@@/$SHCVDB_USER/" \
-    -e "s/@@shcvPassword@@/$SHCVDB_PASSWORD/" \
-    -e "s/@@shcvHost@@/$SHCVDB_HOST/" \
-    -e "s/@@masterEncryptionKey@@/$LABKEY_ENCRYPTION_KEY/" \
-    labkey.xml_src > ROOT.xml
+RUN cd /labkey/bin && \
+    chown tomcat.tomcat configure_labkey_xml.sh && \
+    chmod +x configure_labkey_xml.sh
+
+CMD ["/labkey/bin/configure_labkey_xml.sh", "run"]
