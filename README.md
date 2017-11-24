@@ -17,7 +17,7 @@ For user administration an SMTP server is desirable in order to send User inform
 * **labkey_core**: Dockerfile and other source files needed for building a Docker image that runs LabKey Server.
     * See the [labkey_core README](./labkey_core/README.md) file for further details.
 * **lkey_userdb**: Dockerfile and other source files needed for building a Docker image that provides a back end database required by labkey-core.
-    * See the [lk_userdb README](./lkey_userdb/README.md) file for further details.
+    * See the [lkey_userdb README](./lkey_userdb/README.md) file for further details.
 * **labkey_smtp**: Dockerfile and other source files needed for building a Docker image that provides an smtp mail daemon.
     * See the [labkey_smtp README](.labkey_smtp/README.md) file for further details (not yet implemented).
 * **stop_hcv_db**: Dockerfile and other source files needed for building a Docker image that provides a database containing the STOP-HCV metadata accessed by labkey-core.
