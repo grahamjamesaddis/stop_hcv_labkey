@@ -1,5 +1,6 @@
 FROM tomcat:8.5.23
 LABEL maintainer="Graham.Addis@ndm.ox.ac.uk"
+MAINTAINER Graham.Addis@ndm.ox.ac.uk
 # credit to bconn@labkey.com for portions of the setup,
 # See https://github.com/LabKey/samples
 
