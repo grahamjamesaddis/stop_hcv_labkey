@@ -1,4 +1,4 @@
-FROM tomcat:8.5.23
+FROM tomcat:8.5.23-alpine
 LABEL maintainer="Graham.Addis@ndm.ox.ac.uk"
 MAINTAINER Graham.Addis@ndm.ox.ac.uk
 # credit to bconn@labkey.com for portions of the setup,
@@ -31,14 +31,8 @@ ENV LABKEY_PREFIX=LabKey \
     CATALINA_BASE=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat
 
-RUN useradd -m -u 3000 tomcat
-
-#
-# Install extra development tools
-#
-
-RUN apt-get update && \
-    apt-get -y -q install telnet
+RUN addgroup -g 3000 tomcat && \
+    adduser -D -u 3000 -G tomcat tomcat
 
 #
 # Install the LabKey Server and Configure

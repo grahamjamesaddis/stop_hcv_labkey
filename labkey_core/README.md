@@ -5,9 +5,9 @@ This repository contains docker and installation files in order to set up the co
 
 
 ## Components
-The core Docker image is based on the **[tomcat:8.2.3](https://hub.docker.com/_/tomcat/)** image from **[Docker Hub](https://hub.docker.com/)**  repository.
+The core Docker image is based on the **[tomcat:8.5.23](https://hub.docker.com/_/tomcat/)** image from **[Docker Hub](https://hub.docker.com/)**  repository.
 
-The Tomcat version used is 8.2.3, which is based on the **[openjdk](https://hub.docker.com/r/_/openjdk/)**:8-jre Docker image.
+The Tomcat version used is 8.5.23, which is based on the **[openjdk](https://hub.docker.com/r/_/openjdk/)**:8.5.23-jre8-alpine Docker image.
 
 LabKey also requires a database for internal storage. See: [labkey_db README](../labkey_db/README.md).
 
